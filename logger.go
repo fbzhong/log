@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"reflect"
 	"runtime"
 	"strconv"
 	"sync"
@@ -1683,7 +1684,7 @@ func (e *Entry) Object(key string, obj ObjectMarshaler) *Entry {
 	e.buf = append(e.buf, ',', '"')
 	e.buf = append(e.buf, key...)
 	e.buf = append(e.buf, '"', ':')
-	if obj == nil {
+	if obj == nil || reflect.ValueOf(obj).IsNil() {
 		e.buf = append(e.buf, "null"...)
 		return e
 	}
@@ -1714,7 +1715,7 @@ func (e *Entry) EmbedObject(obj ObjectMarshaler) *Entry {
 		return nil
 	}
 
-	if obj != nil {
+	if obj != nil && !reflect.ValueOf(obj).IsNil() {
 		obj.MarshalObject(e)
 	}
 	return e
